@@ -1,4 +1,18 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
+@font-face {
+  font-family: "Geist";
+  src: url("fonts/Geist-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Geist";
+  src: url("fonts/Geist-SemiBold.otf") format("opentype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
 
 @font-face {
   font-family: "Gambarino";
@@ -23,7 +37,8 @@
 }
 
 body {
-  font-family: "Inter", sans-serif;
+  font-family: "Geist", sans-serif;
+  font-weight: 400;
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
@@ -157,7 +172,7 @@ a {
   border: none;
   background: #fff;
   box-shadow: var(--shadow);
-  font-family: "Gambarino", "Inter", sans-serif;
+  font-family: "Gambarino", "Geist", sans-serif;
   font-size: 20px;
   font-weight: 600;
   cursor: pointer;
