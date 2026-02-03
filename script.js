@@ -1,24 +1,24 @@
 const projects = [
   {
-    title: "Project Title",
-    subtitle: "Short supporting line.",
+    title: "Pikkit Replay",
+    subtitle: "Your year in sports betting.",
     color: "#5c8dad",
     span: "span-2",
   },
   {
-    title: "Project Title",
-    subtitle: "Short supporting line.",
+    title: "Bristle",
+    subtitle: "Airbnb clean. Anytime.",
     color: "#c4551d",
     span: "",
   },
   {
-    title: "Project Title",
+    title: "Achievements",
     subtitle: "Short supporting line.",
     color: "#365b36",
     span: "",
   },
   {
-    title: "Project Title",
+    title: "Betslip",
     subtitle: "Short supporting line.",
     color: "#4a3f4a",
     span: "span-2",
