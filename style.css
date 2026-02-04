@@ -134,6 +134,7 @@ a {
 .intro h1 {
   font-size: clamp(2rem, 3vw, 2.8rem);
   margin-bottom: 12px;
+  letter-spacing: -0.02em;
 }
 
 .intro p {
@@ -174,6 +175,7 @@ a {
   background-position: center;
   background-repeat: no-repeat;
   animation-delay: 0.75s;
+  position: relative;
 }
 
 .project-card:nth-child(2) {
@@ -225,6 +227,29 @@ a {
   flex-direction: column;
   gap: 8px;
   height: 100%;
+}
+
+.coming-soon {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  background: #fff;
+  color: #111;
+  font-family: "Geist", sans-serif;
+  font-size: 16px;
+  opacity: 0;
+  border-radius: 12px;
+  padding: 14px 18px;
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.12);
+  transform: translateY(12px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.coming-soon.is-visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .span-2 {

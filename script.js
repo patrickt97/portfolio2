@@ -27,6 +27,34 @@ const projects = [
 ];
 
 const projectsGrid = document.getElementById("projects");
+const showComingSoon = (event) => {
+  const card = event.currentTarget;
+  if (!card) {
+    return;
+  }
+
+  const existing = card.querySelector(".coming-soon");
+  if (existing) {
+    existing.remove();
+  }
+
+  const notice = document.createElement("div");
+  notice.className = "coming-soon";
+  notice.textContent = "Project details coming soon!";
+  card.appendChild(notice);
+
+  requestAnimationFrame(() => {
+    notice.classList.add("is-visible");
+  });
+
+  if (card._noticeTimeout) {
+    window.clearTimeout(card._noticeTimeout);
+  }
+  card._noticeTimeout = window.setTimeout(() => {
+    notice.classList.remove("is-visible");
+    card._noticeTimeout = null;
+  }, 2000);
+};
 
 projects.forEach((project) => {
   const card = document.createElement("article");
@@ -45,6 +73,8 @@ projects.forEach((project) => {
     card.innerHTML = `<a class="project-link" href="${project.url}" target="_blank" rel="noreferrer">${content}</a>`;
   } else {
     card.innerHTML = content;
+    card.classList.add("project-empty");
+    card.addEventListener("click", showComingSoon);
   }
 
   projectsGrid.appendChild(card);
