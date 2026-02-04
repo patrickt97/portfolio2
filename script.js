@@ -21,7 +21,7 @@ const projects = [
   {
     title: "Achievements",
     subtitle: "Gamifying with 3D assets.",
-    image: "assets/Achievements_Dark.png",
+    image: "assets/Achievements_dark.png",
     span: "span-2",
   },
 ];
