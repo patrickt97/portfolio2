@@ -338,4 +338,8 @@ a {
   .project-card p {
     opacity: 1;
   }
+
+  .project-card {
+    background-size: auto 100%;
+  }
 }
