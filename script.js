@@ -2,25 +2,26 @@ const projects = [
   {
     title: "Pikkit Replay",
     subtitle: "Your year in sports betting.",
-    color: "#5c8dad",
+    image: "assets/Replay.png",
+    url: "https://pikkit.com/replay",
     span: "span-2",
   },
   {
     title: "Bristle",
     subtitle: "Airbnb clean. Anytime.",
-    color: "#c4551d",
+    image: "assets/Bristle.png",
+    span: "",
+  },
+  {
+    title: "Pikkit Betslip",
+    subtitle: "Industry defining bet placing.",
+    image: "assets/Betslip.png",
     span: "",
   },
   {
     title: "Achievements",
-    subtitle: "Short supporting line.",
-    color: "#365b36",
-    span: "",
-  },
-  {
-    title: "Betslip",
-    subtitle: "Short supporting line.",
-    color: "#4a3f4a",
+    subtitle: "Gamifying with 3D assets.",
+    image: "assets/Achievements.png",
     span: "span-2",
   },
 ];
@@ -29,13 +30,32 @@ const projectsGrid = document.getElementById("projects");
 
 projects.forEach((project) => {
   const card = document.createElement("article");
-  card.className = `project-card ${project.span}`.trim();
-  card.style.background = project.color;
+  card.className = `project-card reveal ${project.span}`.trim();
+  card.style.backgroundColor = project.color;
+  if (project.image) {
+        card.style.backgroundImage = `url(${project.image})`;
+  }
 
-  card.innerHTML = `
+  const content = `
     <h3>${project.title}</h3>
     <p>${project.subtitle}</p>
   `;
 
+  if (project.url) {
+    card.innerHTML = `<a class="project-link" href="${project.url}" target="_blank" rel="noreferrer">${content}</a>`;
+  } else {
+    card.innerHTML = content;
+  }
+
   projectsGrid.appendChild(card);
+});
+
+document.querySelectorAll(".reveal").forEach((element) => {
+  element.addEventListener(
+    "animationend",
+    () => {
+      element.classList.remove("reveal");
+    },
+    { once: true }
+  );
 });
