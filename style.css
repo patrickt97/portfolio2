@@ -258,30 +258,29 @@ a {
 
 .hello {
   margin-top: auto;
-  display: inline-flex;
-  align-items: center;
-  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 0;
   border-radius: 999px;
   border: none;
-  background: #fff;
-  box-shadow: var(--shadow);
+  background: transparent;
+  box-shadow: none;
   font-family: "Gambarino", "Geist", sans-serif;
   font-size: 20px;
   font-weight: 600;
   cursor: pointer;
   width: 100%;
   justify-content: flex-start;
-  max-width: 216px;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  max-width: 320px;
 }
 
 .hello:hover {
-  transform: scale(1.03);
-  box-shadow: 0 18px 35px rgba(0, 0, 0, 0.12);
+  box-shadow: none;
 }
 
 .hello-text {
-  flex: 1;
   text-align: center;
 }
 
@@ -289,9 +288,37 @@ a {
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background-image: url("assets/Pat_profile.png");
+  background-image: url("assets/pat_profile.png");
   background-size: cover;
   background-position: center;
+}
+
+.hello-bubble {
+  position: relative;
+  background: #fff;
+  border-radius: 999px;
+  padding: 10px 18px;
+  box-shadow: var(--shadow);
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 4px;
+  transition: transform 0.25s ease;
+}
+
+.hello:hover .hello-bubble {
+  transform: scale(1.05);
+}
+
+.hello-bubble::after {
+  content: "";
+  position: absolute;
+  left: 20px;
+  bottom: -4px;
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  transform: rotate(45deg);
+  box-shadow: -6px 6px 12px rgba(0, 0, 0, 0.04);
 }
 
 @media (max-width: 960px) {
