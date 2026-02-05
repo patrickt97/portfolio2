@@ -271,7 +271,7 @@ a {
   cursor: pointer;
   width: 100%;
   justify-content: flex-start;
-  max-width: 320px;
+  max-width: 216px;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
