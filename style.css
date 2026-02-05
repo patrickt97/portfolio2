@@ -303,6 +303,8 @@ a {
   align-items: center;
   margin-bottom: 4px;
   transition: transform 0.25s ease;
+  animation: rise-in 0.8s ease-out both;
+  animation-delay: 2.5s;
 }
 
 .hello:hover .hello-bubble {
