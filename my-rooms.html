@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Rooms — Patrick Tan</title>
+    <link rel="icon" href="assets/TanLogo_Halftone.png" type="image/png" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FCTTJNKHZ5"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-FCTTJNKHZ5');
+    </script>
+  <body>
+    <main class="split-layout rooms-layout">
+      <aside class="panel-left reveal">
+        <a class="logo" href="index.html" aria-label="Home">
+          <img src="assets/TanLogo_Halftone.png" alt="Patrick Tan logo" />
+        </a>
+        <div class="intro">
+          <h1>My Rooms</h1>
+          <p>
+            A collection of spaces, setups, and corners that shape how I live,
+            work, and make things.
+          </p>
+          <a class="bio-button" href="index.html">Back Home</a>
+        </div>
+      </aside>
+
+      <section class="panel-right rooms-content">
+        <header class="site-header reveal">
+          <nav class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="assets/PatrickTanResume.pdf" download>Resume</a>
+            <a href="https://www.linkedin.com/in/pat-tan/" target="_blank" rel="noreferrer">LinkedIn</a>
+          </nav>
+        </header>
+
+        <section class="rooms-hero reveal" aria-label="My Rooms">
+          <figure class="iso-grid" aria-label="2:1 isometric tile grid">
+            <svg viewBox="0 -112 760 568" role="img" aria-labelledby="iso-grid-title" shape-rendering="crispEdges">
+              <title id="iso-grid-title">2:1 isometric tile grid</title>
+              <defs>
+                <pattern id="iso-floor-pixels" width="16" height="16" patternUnits="userSpaceOnUse">
+                  <rect class="floor-pixel-a" x="0" y="0" width="8" height="8" />
+                  <rect class="floor-pixel-b" x="8" y="0" width="8" height="8" />
+                  <rect class="floor-pixel-b" x="0" y="8" width="8" height="8" />
+                  <rect class="floor-pixel-a" x="8" y="8" width="8" height="8" />
+                </pattern>
+                <pattern id="iso-floor-depth-pixels" width="16" height="16" patternUnits="userSpaceOnUse">
+                  <rect class="floor-depth-pixel-a" x="0" y="0" width="8" height="8" />
+                  <rect class="floor-depth-pixel-b" x="8" y="0" width="8" height="8" />
+                  <rect class="floor-depth-pixel-b" x="0" y="8" width="8" height="8" />
+                  <rect class="floor-depth-pixel-a" x="8" y="8" width="8" height="8" />
+                </pattern>
+                <pattern id="iso-wall-left-pixels" width="16" height="16" patternUnits="userSpaceOnUse">
+                  <rect class="wall-left-pixel-a" x="0" y="0" width="8" height="8" />
+                  <rect class="wall-left-pixel-b" x="8" y="0" width="8" height="8" />
+                  <rect class="wall-left-pixel-b" x="0" y="8" width="8" height="8" />
+                  <rect class="wall-left-pixel-a" x="8" y="8" width="8" height="8" />
+                </pattern>
+                <pattern id="iso-wall-right-pixels" width="16" height="16" patternUnits="userSpaceOnUse">
+                  <rect class="wall-right-pixel-a" x="0" y="0" width="8" height="8" />
+                  <rect class="wall-right-pixel-b" x="8" y="0" width="8" height="8" />
+                  <rect class="wall-right-pixel-b" x="0" y="8" width="8" height="8" />
+                  <rect class="wall-right-pixel-a" x="8" y="8" width="8" height="8" />
+                </pattern>
+                <pattern id="iso-door-pixels" width="16" height="16" patternUnits="userSpaceOnUse">
+                  <rect class="door-pixel-a" x="0" y="0" width="8" height="8" />
+                  <rect class="door-pixel-b" x="8" y="0" width="8" height="8" />
+                  <rect class="door-pixel-b" x="0" y="8" width="8" height="8" />
+                  <rect class="door-pixel-a" x="8" y="8" width="8" height="8" />
+                </pattern>
+                <pattern id="iso-window-pixels" width="16" height="16" patternUnits="userSpaceOnUse">
+                  <rect class="window-pixel-a" x="0" y="0" width="8" height="8" />
+                  <rect class="window-pixel-b" x="8" y="0" width="8" height="8" />
+                  <rect class="window-pixel-b" x="0" y="8" width="8" height="8" />
+                  <rect class="window-pixel-a" x="8" y="8" width="8" height="8" />
+                </pattern>
+                <pattern id="desk-wood-pixels" width="16" height="16" patternUnits="userSpaceOnUse">
+                  <rect class="desk-wood-pixel-a" x="0" y="0" width="8" height="8" />
+                  <rect class="desk-wood-pixel-b" x="8" y="0" width="8" height="8" />
+                  <rect class="desk-wood-pixel-b" x="0" y="8" width="8" height="8" />
+                  <rect class="desk-wood-pixel-a" x="8" y="8" width="8" height="8" />
+                </pattern>
+                <pattern id="desk-depth-pixels" width="16" height="16" patternUnits="userSpaceOnUse">
+                  <rect class="desk-depth-pixel-a" x="0" y="0" width="8" height="8" />
+                  <rect class="desk-depth-pixel-b" x="8" y="0" width="8" height="8" />
+                  <rect class="desk-depth-pixel-b" x="0" y="8" width="8" height="8" />
+                  <rect class="desk-depth-pixel-a" x="8" y="8" width="8" height="8" />
+                </pattern>
+                <pattern id="cabinet-green-pixels" width="16" height="16" patternUnits="userSpaceOnUse">
+                  <rect class="cabinet-green-pixel-a" x="0" y="0" width="8" height="8" />
+                  <rect class="cabinet-green-pixel-b" x="8" y="0" width="8" height="8" />
+                  <rect class="cabinet-green-pixel-b" x="0" y="8" width="8" height="8" />
+                  <rect class="cabinet-green-pixel-a" x="8" y="8" width="8" height="8" />
+                </pattern>
+                <pattern id="tv-screen-pixels" width="16" height="16" patternUnits="userSpaceOnUse">
+                  <rect class="tv-screen-pixel-a" x="0" y="0" width="8" height="8" />
+                  <rect class="tv-screen-pixel-b" x="8" y="0" width="8" height="8" />
+                  <rect class="tv-screen-pixel-b" x="0" y="8" width="8" height="8" />
+                  <rect class="tv-screen-pixel-a" x="8" y="8" width="8" height="8" />
+                </pattern>
+                <pattern id="console-white-pixels" width="16" height="16" patternUnits="userSpaceOnUse">
+                  <rect class="console-white-pixel-a" x="0" y="0" width="8" height="8" />
+                  <rect class="console-white-pixel-b" x="8" y="0" width="8" height="8" />
+                  <rect class="console-white-pixel-b" x="0" y="8" width="8" height="8" />
+                  <rect class="console-white-pixel-a" x="8" y="8" width="8" height="8" />
+                </pattern>
+                <pattern id="console-side-pixels" width="16" height="16" patternUnits="userSpaceOnUse">
+                  <rect class="console-side-pixel-a" x="0" y="0" width="8" height="8" />
+                  <rect class="console-side-pixel-b" x="8" y="0" width="8" height="8" />
+                  <rect class="console-side-pixel-b" x="0" y="8" width="8" height="8" />
+                  <rect class="console-side-pixel-a" x="8" y="8" width="8" height="8" />
+                </pattern>
+                <clipPath id="iso-floor-mask">
+                  <path d="M272 64L288 64L288 72L304 72L304 80L320 80L320 88L336 88L336 96L352 96L352 104L368 104L368 112L384 112L384 120L400 120L400 128L416 128L416 136L432 136L432 144L448 144L448 152L464 152L464 160L480 160L480 168L496 168L496 176L512 176L512 184L528 184L528 192L544 192L544 200L560 200L560 208L576 208L576 216L592 216L592 224L608 224L608 232L624 232L624 240L640 240L640 248L656 248L656 256L672 256L672 264L688 264L688 272L704 272L704 280L720 280L720 288L720 296L704 296L704 304L688 304L688 312L672 312L672 320L656 320L656 328L640 328L640 336L624 336L624 344L608 344L608 352L592 352L592 360L576 360L576 368L560 368L560 376L544 376L544 384L528 384L528 392L512 392L512 400L496 400L496 408L480 408L480 416L464 416L464 408L448 408L448 400L432 400L432 392L416 392L416 384L400 384L400 376L384 376L384 368L368 368L368 360L352 360L352 352L336 352L336 344L320 344L320 336L304 336L304 328L288 328L288 320L272 320L272 312L256 312L256 304L232 304L232 296L224 296L224 288L208 288L208 280L192 280L192 272L176 272L176 264L160 264L160 256L144 256L144 248L128 248L128 240L112 240L112 232L96 232L96 224L80 224L80 216L64 216L64 208L48 208L48 200L32 200L32 192L32 184L48 184L48 176L64 176L64 168L80 168L80 160L96 160L96 152L112 152L112 144L128 144L128 136L144 136L144 128L160 128L160 120L176 120L176 112L192 112L192 104L208 104L208 96L224 96L224 88L240 88L240 80L256 80L256 72L272 72L272 64Z" />
+                </clipPath>
+                <pattern id="iso-tile-grid" width="128" height="64" patternUnits="userSpaceOnUse">
+                  <path d="M0 32 L64 0 L128 32 M0 32 L64 64 L128 32" />
+                </pattern>
+              </defs>
+              <rect class="iso-grid-lines" x="-128" y="-192" width="1024" height="712" />
+              <g class="iso-walls">
+                <path class="iso-wall-left-fill" d="M272 -120L280 -120L280 -112L280 -104L280 -96L280 -88L280 -80L280 -72L280 -64L280 -56L280 -48L280 -40L280 -32L280 -24L280 -16L280 -8L280 0L280 8L280 16L280 24L280 32L280 40L280 48L280 56L280 64L272 64L272 72L256 72L256 80L240 80L240 88L224 88L224 96L208 96L208 104L192 104L192 112L176 112L176 120L160 120L160 128L144 128L144 136L128 136L128 144L112 144L112 152L96 152L96 160L80 160L80 168L64 168L64 176L48 176L48 184L32 184L32 192L24 192L24 184L24 176L24 168L24 160L24 152L24 144L24 136L24 128L24 120L24 112L24 104L24 96L24 88L24 80L24 72L24 64L24 56L24 48L24 40L24 32L24 24L24 16L24 8L32 8L32 0L48 0L48 -8L64 -8L64 -16L80 -16L80 -24L96 -24L96 -32L112 -32L112 -40L128 -40L128 -48L144 -48L144 -56L160 -56L160 -64L176 -64L176 -72L192 -72L192 -80L208 -80L208 -88L224 -88L224 -96L240 -96L240 -104L256 -104L256 -112L272 -112L272 -120Z" />
+                <path class="iso-wall-right-fill" d="M280 -120L288 -120L288 -112L304 -112L304 -104L320 -104L320 -96L336 -96L336 -88L352 -88L352 -80L368 -80L368 -72L384 -72L384 -64L400 -64L400 -56L416 -56L416 -48L432 -48L432 -40L448 -40L448 -32L464 -32L464 -24L480 -24L480 -16L496 -16L496 -8L512 -8L512 0L528 0L528 8L544 8L544 16L560 16L560 24L576 24L576 32L592 32L592 40L608 40L608 48L624 48L624 56L640 56L640 64L656 64L656 72L672 72L672 80L688 80L688 88L704 88L704 96L720 96L720 104L728 104L728 112L728 120L728 128L728 136L728 144L728 152L728 160L728 168L728 176L728 184L728 192L728 200L728 208L728 216L728 224L728 232L728 240L728 248L728 256L728 264L728 272L728 280L728 288L720 288L720 280L704 280L704 272L688 272L688 264L672 264L672 256L656 256L656 248L640 248L640 240L624 240L624 232L608 232L608 224L592 224L592 216L576 216L576 208L560 208L560 200L544 200L544 192L528 192L528 184L512 184L512 176L496 176L496 168L480 168L480 160L464 160L464 152L448 152L448 144L432 144L432 136L416 136L416 128L400 128L400 120L384 120L384 112L368 112L368 104L352 104L352 96L336 96L336 88L320 88L320 80L304 80L304 72L288 72L288 64L280 64L280 56L280 48L280 40L280 32L280 24L280 16L280 8L280 0L280 -8L280 -16L280 -24L280 -32L280 -40L280 -48L280 -56L280 -64L280 -72L280 -80L280 -88L280 -96L280 -104L280 -112L280 -120Z" />
+              </g>
+              <g class="iso-door">
+                <path class="entry-door-fill" d="M144 -8L152 -8L152 0L152 8L152 16L152 24L152 32L152 40L152 48L152 56L152 64L152 72L152 80L152 88L152 96L152 104L152 112L152 120L152 128L144 128L144 136L128 136L128 144L112 144L112 152L96 152L96 160L88 160L88 152L88 144L88 136L88 128L88 120L88 112L88 104L88 96L88 88L88 80L88 72L88 64L88 56L88 48L88 40L88 32L88 24L96 24L96 16L112 16L112 8L128 8L128 0L144 0L144 -8Z" />
+                <path class="entry-window-fill" d="M128 16L136 16L136 24L136 32L136 40L136 48L136 56L136 64L136 72L136 80L136 88L128 88L128 96L112 96L112 104L104 104L104 96L104 88L104 80L104 72L104 64L104 56L104 48L104 40L104 32L112 32L112 24L128 24L128 16Z" />
+                <rect class="entry-door-knob" x="136" y="104" width="8" height="8" />
+              </g>
+              <g class="left-wall-window" transform="translate(0 -16)">
+                <path class="large-window-frame" d="M256 -48L264 -48L264 -40L264 -32L264 -24L264 -16L264 -8L264 0L264 8L264 16L264 24L264 32L264 40L264 48L264 56L264 64L264 72L248 72L248 80L232 80L232 88L216 88L216 96L200 96L200 104L184 104L184 112L168 112L168 120L160 120L160 112L160 104L160 96L160 88L160 80L160 72L160 64L160 56L160 48L160 40L160 32L160 24L160 16L160 8L160 0L176 0L176 -8L192 -8L192 -16L208 -16L208 -24L224 -24L224 -32L240 -32L240 -40L256 -40L256 -48Z" />
+                <path class="large-window-glass" d="M240 -24L248 -24L248 -16L248 -8L248 0L248 8L248 16L248 24L248 32L248 40L248 48L248 56L248 64L248 72L232 72L232 80L216 80L216 88L200 88L200 96L184 96L184 104L176 104L176 96L176 88L176 80L176 72L176 64L176 56L176 48L176 40L176 32L176 24L176 16L176 8L192 8L192 0L208 0L208 -8L224 -8L224 -16L240 -16L240 -24Z" />
+              </g>
+              <rect class="iso-floor-depth" x="32" y="64" width="688" height="352" clip-path="url(#iso-floor-mask)" />
+              <rect class="iso-floor-fill" x="32" y="64" width="688" height="352" clip-path="url(#iso-floor-mask)" />
+              <rect class="iso-floor-grid-lines" x="32" y="64" width="688" height="352" clip-path="url(#iso-floor-mask)" />
+              <g class="tv-console" transform="translate(16 -40)">
+                <g class="tv-display" transform="translate(-24 24)">
+                  <path class="tv-screen" d="M456 56L464 56L464 64L480 64L480 72L496 72L496 80L512 80L512 88L528 88L528 96L544 96L544 104L560 104L560 112L576 112L576 120L592 120L592 128L600 128L600 136L600 144L600 152L600 160L600 168L600 176L600 184L600 192L600 200L600 208L600 216L592 216L592 208L576 208L576 200L560 200L560 192L544 192L544 184L528 184L528 176L512 176L512 168L496 168L496 160L480 160L480 152L464 152L464 144L456 144L456 136L456 128L456 120L456 112L456 104L456 96L456 88L456 80L456 72L456 64L456 56Z" />
+                  <path class="tv-stand" d="M512 192L520 192L520 200L536 200L536 208L544 208L544 216L544 224L544 232L544 240L536 240L536 232L520 232L520 224L512 224L512 216L512 208L512 200L512 192Z" />
+                </g>
+                <path class="console-front" d="M384 184L392 184L392 192L408 192L408 200L424 200L424 208L440 208L440 216L456 216L456 224L472 224L472 232L488 232L488 240L504 240L504 248L520 248L520 256L536 256L536 264L544 264L544 272L544 280L544 288L536 288L536 280L520 280L520 272L504 272L504 264L488 264L488 256L472 256L472 248L456 248L456 240L440 240L440 232L424 232L424 224L408 224L408 216L392 216L392 208L384 208L384 200L384 192L384 184Z" />
+                <path class="console-side" d="M584 240L592 240L592 248L592 256L592 264L584 264L584 272L568 272L568 280L552 280L552 288L544 288L544 280L544 272L544 264L552 264L552 256L568 256L568 248L584 248L584 240Z" />
+                <path class="console-top" d="M424 160L440 160L440 168L456 168L456 176L472 176L472 184L488 184L488 192L504 192L504 200L520 200L520 208L536 208L536 216L552 216L552 224L568 224L568 232L584 232L584 240L584 248L568 248L568 256L552 256L552 264L536 264L536 256L520 256L520 248L504 248L504 240L488 240L488 232L472 232L472 224L456 224L456 216L440 216L440 208L424 208L424 200L408 200L408 192L392 192L392 184L392 176L408 176L408 168L424 168L424 160Z" />
+              </g>
+              <g class="corner-desk" transform="translate(16 -64)">
+                <path class="desk-cabinet" d="M256 128L264 128L264 136L280 136L280 144L288 144L288 152L288 160L288 168L288 176L288 184L280 184L280 176L264 176L264 168L256 168L256 160L256 152L256 144L256 136L256 128Z" />
+                <path class="desk-cabinet-side" d="M296 136L304 136L304 144L304 152L304 160L304 168L304 176L296 176L296 184L288 184L288 176L288 168L288 160L288 152L288 144L296 144L296 136Z" />
+                <path class="desk-cabinet" d="M320 160L328 160L328 168L344 168L344 176L352 176L352 184L352 192L352 200L352 208L352 216L344 216L344 208L328 208L328 200L320 200L320 192L320 184L320 176L320 168L320 160Z" />
+                <path class="desk-cabinet-side" d="M360 168L368 168L368 176L368 184L368 192L368 200L368 208L360 208L360 216L352 216L352 208L352 200L352 192L352 184L352 176L360 176L360 168Z" />
+                <path class="desk-front" d="M248 120L256 120L256 128L272 128L272 136L288 136L288 144L304 144L304 152L320 152L320 160L336 160L336 168L352 168L352 176L360 176L360 184L360 192L352 192L352 184L336 184L336 176L320 176L320 168L304 168L304 160L288 160L288 152L272 152L272 144L256 144L256 136L248 136L248 128L248 120Z" />
+                <path class="desk-top" d="M288 96L304 96L304 104L320 104L320 112L336 112L336 120L352 120L352 128L368 128L368 136L384 136L384 144L400 144L400 152L400 160L384 160L384 168L368 168L368 176L352 176L352 168L336 168L336 160L320 160L320 152L304 152L304 144L288 144L288 136L272 136L272 128L256 128L256 120L256 112L272 112L272 104L288 104L288 96Z" />
+              </g>
+            </svg>
+          </figure>
+          <div class="rooms-copy">
+            <p class="eyebrow">My Rooms</p>
+            <h2>Room details coming soon.</h2>
+            <p>
+              This page is ready for photos, notes, and room stories when they are
+              ready to share.
+            </p>
+          </div>
+        </section>
+      </section>
+    </main>
+  </body>
+</html>
