@@ -3,6 +3,7 @@ const projects = [
     title: "Pikkit Replay",
     subtitle: "Your year in sports betting.",
     image: "assets/Replay.png",
+    color: "#e06539",
     url: "https://pikkit.com/replay",
     span: "span-2",
   },
@@ -10,18 +11,21 @@ const projects = [
     title: "Bristle",
     subtitle: "Airbnb clean. Anytime.",
     image: "assets/Bristle.png",
+    color: "#3a2e92",
     span: "",
   },
   {
     title: "Pikkit Betslip",
     subtitle: "Industry defining bet placing.",
     image: "assets/Betslip.png",
+    color: "#3690ce",
     span: "",
   },
   {
     title: "Achievements",
     subtitle: "Gamifying with 3D assets.",
     image: "assets/Achievements_dark.png",
+    color: "#484048",
     span: "span-2",
   },
 ];
@@ -56,6 +60,7 @@ const showComingSoon = (event) => {
   }, 2000);
 };
 
+if (projectsGrid) {
 projects.forEach((project) => {
   const card = document.createElement("article");
   card.className = `project-card reveal ${project.span}`.trim();
@@ -79,6 +84,7 @@ projects.forEach((project) => {
 
   projectsGrid.appendChild(card);
 });
+}
 
 document.querySelectorAll(".reveal").forEach((element) => {
   element.addEventListener(
