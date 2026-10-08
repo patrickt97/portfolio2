@@ -18,18 +18,18 @@ const projects = [
 ];
 
 const defaults = {
-  cardSize: 100,
-  margin: 7,
-  borderRadius: 5.5,
-  edgeRadius: 12,
-  thickness: 30,
-  tiltX: 0,
-  tiltY: 0,
-  titleSize: 5.5,
-  titleSpacing: 0,
-  bgTransparency: 0,
-  blur: 0,
-  glassiness: 0,
+  cardSize: 120,
+  margin: 4,
+  borderRadius: 4,
+  edgeRadius: 4,
+  thickness: 12,
+  tiltX: 3,
+  tiltY: -13,
+  titleSize: 2.4,
+  titleSpacing: 24,
+  bgTransparency: 0.31,
+  blur: 0.63,
+  glassiness: 0.2,
 };
 
 const controls = [
@@ -47,8 +47,12 @@ const controls = [
   { key: "glassiness", label: "Glassiness", min: 0, max: 1, step: 0.01, format: (v) => v.toFixed(2) },
 ];
 
+const tweaksPanel = document.getElementById("card-tweaks");
+const tweaksEnabled = Boolean(tweaksPanel) && !tweaksPanel.hidden;
+
 function loadSettings() {
   const loaded = { ...defaults };
+  if (!tweaksEnabled) return loaded;
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "{}");
     for (const control of controls) {
@@ -493,8 +497,8 @@ function apply(key) {
 }
 
 function buildPanel() {
-  const panel = document.getElementById("card-tweaks");
-  if (!panel) return;
+  if (!tweaksEnabled) return;
+  const panel = tweaksPanel;
   for (const control of controls) {
     const row = document.createElement("div");
     row.className = "tweak";

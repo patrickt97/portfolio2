@@ -102,6 +102,10 @@
         font-size: 13px;
       }
 
+      .panel[hidden] {
+        display: none;
+      }
+
       .tweak {
         display: flex;
         align-items: center;
@@ -263,7 +267,7 @@
         <span class="rise"><span style="--delay: 1.5s">CONTACT</span></span>
       </a>
     </nav>
-    <div class="panel" id="card-tweaks" aria-label="Tweaks">
+    <div class="panel" id="card-tweaks" aria-label="Tweaks" hidden>
       <button class="panel-header" id="panel-toggle" type="button" aria-expanded="true">
         <span>Tweaks</span>
         <span class="panel-chevron" aria-hidden="true"></span>
