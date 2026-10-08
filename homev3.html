@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home v3</title>
+    <style>
+      @font-face {
+        font-family: "Geist";
+        src: url("fonts/Geist-Regular.otf") format("opentype");
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+      }
+
+      @font-face {
+        font-family: "Sentient";
+        src: url("fonts/Sentient-Regular.otf") format("opentype");
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+      }
+
+      @font-face {
+        font-family: "Gambarino";
+        src: url("fonts/Gambarino-Regular.otf") format("opentype");
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+      }
+
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: #10161c;
+        overflow: hidden;
+      }
+
+      .name {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        right: 10px;
+        z-index: 2;
+        display: flex;
+        justify-content: space-between;
+        margin: 0;
+        color: #fff;
+        font-family: "Gambarino", serif;
+        font-weight: 400;
+        font-size: 20px;
+        line-height: 1;
+        pointer-events: none;
+      }
+
+      .links {
+        position: fixed;
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+        z-index: 2;
+        display: flex;
+        justify-content: space-between;
+        font-family: "Gambarino", serif;
+        font-weight: 400;
+        font-size: 20px;
+        line-height: 1;
+      }
+
+      .links a {
+        color: #fff;
+        text-decoration: none;
+        transition: opacity 0.2s ease;
+      }
+
+      .links a:hover {
+        opacity: 0.6;
+      }
+
+      .links a:focus-visible {
+        outline: 1px solid #fff;
+        outline-offset: 4px;
+      }
+
+      .panel {
+        position: fixed;
+        left: 20px;
+        bottom: 44px;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        width: 320px;
+        padding: 14px 16px;
+        background: #111;
+        border: 1px solid #2c2c2c;
+        border-radius: 14px;
+        color: #fff;
+        font-family: "Geist", sans-serif;
+        font-size: 13px;
+      }
+
+      .tweak {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .tweak > label {
+        flex: 0 0 112px;
+        white-space: nowrap;
+        color: #e6e6e6;
+      }
+
+      .panel input[type="range"] {
+        flex: 1 1 auto;
+        min-width: 0;
+        accent-color: #fff;
+        cursor: pointer;
+      }
+
+      .panel output {
+        flex: 0 0 3.2em;
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+        color: #c8c8c8;
+      }
+
+      .panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        background: none;
+        color: #fff;
+        font: inherit;
+        font-weight: 500;
+        cursor: pointer;
+      }
+
+      .panel-header:focus-visible {
+        outline: 2px solid #fff;
+        outline-offset: 4px;
+        border-radius: 4px;
+      }
+
+      .panel-chevron {
+        width: 10px;
+        height: 10px;
+        border-right: 1.5px solid #c8c8c8;
+        border-bottom: 1.5px solid #c8c8c8;
+        transform: translateY(-2px) rotate(45deg);
+        transition: transform 0.2s ease;
+      }
+
+      .panel.collapsed {
+        width: auto;
+        padding: 10px 14px;
+      }
+
+      .panel.collapsed .panel-chevron {
+        transform: translateY(2px) rotate(-135deg);
+      }
+
+      .panel.collapsed > :not(.panel-header) {
+        display: none;
+      }
+
+      .panel-heading {
+        margin: 4px 0 0;
+        color: #8a8a8a;
+        font-size: 11px;
+        font-weight: 400;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .panel-heading:first-child {
+        margin-top: 0;
+      }
+
+      .rise {
+        display: block;
+        overflow: hidden;
+        padding-bottom: 0.08em;
+      }
+
+      .rise > span {
+        display: block;
+        transform: translateY(110%);
+        transition: transform 1.1s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      .panel {
+        opacity: 0;
+        transform: translateY(24px);
+        transition:
+          opacity 0.9s ease,
+          transform 1.1s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      .intro-play .rise > span {
+        transform: none;
+        transition-delay: var(--delay, 0s);
+      }
+
+      .intro-play .panel {
+        opacity: 1;
+        transform: none;
+        transition-delay: 1.5s;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .rise > span,
+        .panel {
+          opacity: 1;
+          transform: none;
+          transition: none;
+        }
+      }
+
+      #card-view {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        touch-action: none;
+      }
+    </style>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <canvas id="card-view" aria-label="Bristle project card"></canvas>
+    <p class="name">
+      <span class="rise"><span style="--delay: 1.2s">PATRICK</span></span>
+      <span class="rise"><span style="--delay: 1.3s">TAN</span></span>
+    </p>
+    <nav class="links" aria-label="Links">
+      <a href="assets/PatrickTanResume.pdf" download>
+        <span class="rise"><span style="--delay: 1.35s">RESUME</span></span>
+      </a>
+      <a href="https://www.instagram.com/patricktan.co/" target="_blank" rel="noreferrer">
+        <span class="rise"><span style="--delay: 1.4s">INSTAGRAM</span></span>
+      </a>
+      <a href="https://www.linkedin.com/in/pat-tan/" target="_blank" rel="noreferrer">
+        <span class="rise"><span style="--delay: 1.45s">LINKEDIN</span></span>
+      </a>
+      <a href="mailto:tan.y.patrick@gmail.com?subject=Hi%20Pat,%20I%27d%20love%20to%20work%20with%20you!">
+        <span class="rise"><span style="--delay: 1.5s">CONTACT</span></span>
+      </a>
+    </nav>
+    <div class="panel" id="card-tweaks" aria-label="Tweaks">
+      <button class="panel-header" id="panel-toggle" type="button" aria-expanded="true">
+        <span>Tweaks</span>
+        <span class="panel-chevron" aria-hidden="true"></span>
+      </button>
+      <h2 class="panel-heading">Card</h2>
+    </div>
+    <script>
+      setTimeout(() => document.body.classList.add("intro-play"), 6000);
+
+      (() => {
+        const panel = document.getElementById("card-tweaks");
+        const toggle = document.getElementById("panel-toggle");
+        const key = "homev3-panel-collapsed";
+        const setCollapsed = (collapsed) => {
+          panel.classList.toggle("collapsed", collapsed);
+          toggle.setAttribute("aria-expanded", String(!collapsed));
+        };
+        try {
+          setCollapsed(localStorage.getItem(key) === "true");
+        } catch {
+          setCollapsed(false);
+        }
+        toggle.addEventListener("click", () => {
+          const collapsed = !panel.classList.contains("collapsed");
+          setCollapsed(collapsed);
+          try {
+            localStorage.setItem(key, String(collapsed));
+          } catch {}
+        });
+      })();
+    </script>
+    <script type="module" src="card.js"></script>
+  </body>
+</html>
