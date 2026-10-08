@@ -29,12 +29,12 @@ const defaults = {
   edgeRadius: 4,
   thickness: 12,
   tiltX: 3,
-  tiltY: -13,
+  tiltY: -11,
   titleSize: 2.4,
   titleSpacing: 24,
-  bgTransparency: 0.31,
-  blur: 0.63,
-  glassiness: 0.2,
+  bgTransparency: 0.23,
+  blur: 0.74,
+  glassiness: 0.21,
 };
 
 const controls = [
