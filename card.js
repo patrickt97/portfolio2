@@ -1,5 +1,7 @@
 import * as THREE from "three";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
+import { Brush, Evaluator, SUBTRACTION } from "three-bvh-csg";
 import { createLiquid } from "./liquid.js";
 
 const CARD_ASPECT = 828 / 1024;
@@ -8,7 +10,10 @@ const CARD_WIDTH = CARD_HEIGHT * CARD_ASPECT;
 const TEXTURE_WIDTH = 1024;
 const TEXTURE_HEIGHT = Math.round(TEXTURE_WIDTH / CARD_ASPECT);
 const STORAGE_KEY = "homev3-card-tweaks";
-const CARD_SPACING = CARD_WIDTH * 1.09;
+const CARD_WIDTH_SHARE = 0.315;
+const COMPACT_CARD_WIDTH_SHARE = 0.58;
+const CARD_SPACING_SHARE = 1.09;
+const COMPACT_SPACING_SHARE = 1.02;
 
 const projects = [
   { title: "BRISTLE", image: "assets/Bristle.png", pattern: "sweep" },
@@ -74,7 +79,8 @@ function saveSettings() {
 const settings = loadSettings();
 
 const cardScale = () => settings.cardSize / 100;
-const spacing = () => CARD_SPACING * cardScale();
+let spacingShare = CARD_SPACING_SHARE;
+const spacing = () => CARD_WIDTH * spacingShare * cardScale();
 
 const view = document.getElementById("card-view");
 const renderer = new THREE.WebGLRenderer({
@@ -162,6 +168,10 @@ const rimLight = new THREE.DirectionalLight(0x8f7dff, 2.4);
 rimLight.position.set(2.5, -1, -3);
 scene.add(rimLight);
 
+const stampLight = new THREE.DirectionalLight(0xffffff, 1.6);
+stampLight.position.set(-1.4, 2.4, -3.2);
+scene.add(stampLight);
+
 const track = new THREE.Group();
 scene.add(track);
 
@@ -228,8 +238,47 @@ function makeBackgroundTexture([top, bottom]) {
   return texture;
 }
 
-const [images] = await Promise.all([
+function parseSvgSubpaths(d) {
+  const tokens = d.match(/[MLHVZ]|-?\d*\.?\d+/gi);
+  const subpaths = [];
+  let i = 0;
+  let x = 0;
+  let y = 0;
+  let start = null;
+  let current = null;
+  const num = () => parseFloat(tokens[i++]);
+  while (i < tokens.length) {
+    const command = tokens[i++];
+    if (command === "M") {
+      x = num();
+      y = num();
+      current = [[x, y]];
+      start = [x, y];
+    } else if (command === "L") {
+      x = num();
+      y = num();
+      current.push([x, y]);
+    } else if (command === "H") {
+      x = num();
+      current.push([x, y]);
+    } else if (command === "V") {
+      y = num();
+      current.push([x, y]);
+    } else if (command === "Z") {
+      if (start && (x !== start[0] || y !== start[1])) current.push(start);
+      if (current && current.length >= 3) subpaths.push(current);
+      current = null;
+      start = null;
+    }
+  }
+  return subpaths;
+}
+
+const [images, iconSubpaths] = await Promise.all([
   Promise.all(projects.map((project) => loadImage(project.image))),
+  fetch("assets/TanIcon.svg")
+    .then((response) => response.text())
+    .then((svg) => parseSvgSubpaths(svg.match(/\sd="([^"]+)"/)[1])),
   document.fonts.load("400 64px Geist"),
 ]);
 
@@ -238,6 +287,10 @@ const DOT_ROWS = 4;
 const DOT_SIZE_PX = 8;
 const DOT_GAP_PX = 4;
 const DOT_RADIUS_PX = 1;
+// Width of the default card, in CSS pixels, on a height-constrained 1080px-tall view.
+// The grid is a fraction of the card so it scales with card size, focus, and viewport.
+const DOT_REFERENCE_CARD_WIDTH_PX =
+  (CARD_WIDTH * (defaults.cardSize / 100) * 0.51 * 1080) / CARD_HEIGHT;
 const DOT_WAVE_SECONDS = 1.6;
 const DOT_MIN_OPACITY = 0.2;
 const DOT_MAX_OPACITY = 0.6;
@@ -274,11 +327,16 @@ const dotPatterns = {
 };
 
 const contentGeometry = new THREE.PlaneGeometry(CARD_WIDTH, CARD_HEIGHT);
+const BACK_ICON_SHARE = 0.08;
+const ICON_VIEWBOX = 320;
+const csg = new Evaluator();
+csg.useGroups = false;
 let bodyGeometry = new THREE.BufferGeometry();
+let indentGeometry = new THREE.BufferGeometry();
 
 function createCard(project, image, index) {
   const pivot = new THREE.Group();
-  pivot.position.x = index * CARD_SPACING;
+  pivot.position.x = index * spacing();
   const card = new THREE.Group();
   pivot.add(card);
 
@@ -300,9 +358,23 @@ function createCard(project, image, index) {
     depthWrite: false,
   });
 
+  const indentMaterial = new THREE.MeshPhysicalMaterial({
+    map: bodyMaterial.map,
+    ior: 1.25,
+    roughness: 0.32,
+    metalness: 0.08,
+    clearcoat: 0.35,
+    polygonOffset: true,
+    polygonOffsetFactor: -1,
+    polygonOffsetUnits: -1,
+  });
   const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
   body.renderOrder = 1;
   card.add(body);
+
+  const indent = new THREE.Mesh(indentGeometry, indentMaterial);
+  indent.renderOrder = 2;
+  card.add(indent);
 
   const content = new THREE.Mesh(contentGeometry, contentMaterial);
   content.renderOrder = 2;
@@ -337,11 +409,13 @@ function createCard(project, image, index) {
     card,
     body,
     content,
+    indent,
     dots,
     contentCanvas,
     contentTexture,
     bodyMaterial,
     contentMaterial,
+    indentMaterial,
     tilt: new THREE.Vector2(0, 0),
     spin: { x: 0, y: 0, vx: 0, vy: 0 },
   };
@@ -404,8 +478,8 @@ function drawAllContent() {
 }
 
 function placeDots() {
-  const size = (DOT_SIZE_PX * worldPerPixel) / cardScale();
-  const gap = (DOT_GAP_PX * worldPerPixel) / cardScale();
+  const size = CARD_WIDTH * (DOT_SIZE_PX / DOT_REFERENCE_CARD_WIDTH_PX);
+  const gap = CARD_WIDTH * (DOT_GAP_PX / DOT_REFERENCE_CARD_WIDTH_PX);
   const margin = (settings.margin / 100) * CARD_WIDTH;
   const gridWidth = DOT_COLUMNS * size + (DOT_COLUMNS - 1) * gap;
   for (const { dots } of cards) {
@@ -429,6 +503,73 @@ function animateDots(elapsed) {
   }
 }
 
+function iconShapes() {
+  const size = CARD_WIDTH * BACK_ICON_SHARE;
+  const scale = size / ICON_VIEWBOX;
+  const margin = (settings.margin / 100) * CARD_WIDTH;
+  const inset = margin + CARD_WIDTH * 0.04;
+  const centerY = -CARD_HEIGHT / 2 + inset + size / 2;
+  const shapes = [];
+
+  for (const subpath of iconSubpaths) {
+    const points = subpath.map(
+      ([x, y]) => new THREE.Vector2((ICON_VIEWBOX / 2 - x) * scale, (ICON_VIEWBOX / 2 - y) * scale + centerY)
+    );
+    if (points.length > 1 && points[0].distanceToSquared(points[points.length - 1]) < 1e-10) points.pop();
+    if (points.length < 3) continue;
+    if (THREE.ShapeUtils.isClockWise(points)) points.reverse();
+    shapes.push(new THREE.Shape(points));
+  }
+  return shapes;
+}
+
+function mergeIconExtrusions(options, z) {
+  const pieces = iconShapes().map((shape) => {
+    const geometry = new THREE.ExtrudeGeometry(shape, options);
+    geometry.translate(0, 0, z);
+    return geometry;
+  });
+  const merged = mergeGeometries(pieces);
+  for (const piece of pieces) piece.dispose();
+  merged.computeVertexNormals();
+  return merged;
+}
+
+function iconCutter(depth, bevel) {
+  const pocket = Math.min(Math.max(depth * 0.55, 0.006), depth * 0.7);
+  const overlap = Math.max(bevel * 0.35, 0.002);
+  return mergeIconExtrusions(
+    {
+      depth: pocket + overlap,
+      bevelEnabled: false,
+    },
+    -depth / 2 - bevel - overlap
+  );
+}
+
+function iconLiner(depth, bevel) {
+  const pocket = Math.max(depth * 0.9, 0.01);
+  return mergeIconExtrusions(
+    {
+      depth: pocket,
+      bevelEnabled: false,
+    },
+    -depth / 2 - bevel * 0.15
+  );
+}
+
+function indentBack(geometry, depth, bevel) {
+  const cutterGeometry = iconCutter(depth, bevel);
+  const base = new Brush(geometry);
+  const cutter = new Brush(cutterGeometry);
+  base.updateMatrixWorld();
+  cutter.updateMatrixWorld();
+  const result = csg.evaluate(base, cutter, SUBTRACTION);
+  cutterGeometry.dispose();
+  if (result.geometry !== geometry) geometry.dispose();
+  return result.geometry;
+}
+
 function buildBody() {
   const depth = settings.thickness / 1000;
   const bevel = Math.min(settings.edgeRadius / 1000, CARD_WIDTH / 4);
@@ -447,19 +588,30 @@ function buildBody() {
     curveSegments: 24,
   });
   geometry.translate(0, 0, -depth / 2);
-
-  const position = geometry.attributes.position;
-  const uv = geometry.attributes.uv;
-  for (let i = 0; i < position.count; i++) {
-    uv.setXY(i, position.getX(i) / CARD_WIDTH + 0.5, position.getY(i) / CARD_HEIGHT + 0.5);
-  }
-  uv.needsUpdate = true;
+  const indented = indentBack(geometry, depth, bevel);
+  const liner = iconLiner(depth, bevel);
+  const mapCardUv = (geometry) => {
+    const position = geometry.attributes.position;
+    if (!geometry.attributes.uv) {
+      geometry.setAttribute("uv", new THREE.BufferAttribute(new Float32Array(position.count * 2), 2));
+    }
+    const uv = geometry.attributes.uv;
+    for (let i = 0; i < position.count; i++) {
+      uv.setXY(i, position.getX(i) / CARD_WIDTH + 0.5, position.getY(i) / CARD_HEIGHT + 0.5);
+    }
+    uv.needsUpdate = true;
+  };
+  mapCardUv(indented);
+  mapCardUv(liner);
 
   bodyGeometry.dispose();
-  bodyGeometry = geometry;
+  indentGeometry.dispose();
+  bodyGeometry = indented;
+  indentGeometry = liner;
   const contentZ = depth / 2 + bevel + 0.0008;
-  for (const { body, content, dots } of cards) {
-    body.geometry = geometry;
+  for (const { body, content, indent, dots } of cards) {
+    body.geometry = indented;
+    indent.geometry = liner;
     content.position.z = contentZ;
     dots.position.z = contentZ + 0.0005;
   }
@@ -470,7 +622,7 @@ function applyMaterials() {
   const transparency = settings.bgTransparency;
   const surfaceRoughness = THREE.MathUtils.lerp(0.4, 0.04, glass) * (1 - transparency);
 
-  for (const { bodyMaterial, contentMaterial } of cards) {
+  for (const { bodyMaterial, contentMaterial, indentMaterial } of cards) {
     bodyMaterial.transmission = transparency;
     bodyMaterial.roughness = THREE.MathUtils.lerp(surfaceRoughness, 1, settings.blur);
     bodyMaterial.metalness = THREE.MathUtils.lerp(0.1, 0.02, glass);
@@ -479,6 +631,16 @@ function applyMaterials() {
     bodyMaterial.envMapIntensity = THREE.MathUtils.lerp(1, 4, glass);
     bodyMaterial.iridescence = glass * 0.3;
     bodyMaterial.needsUpdate = true;
+
+    indentMaterial.map = bodyMaterial.map;
+    indentMaterial.color.setScalar(0.58);
+    indentMaterial.transmission = 0;
+    indentMaterial.roughness = THREE.MathUtils.lerp(0.22, 0.4, settings.blur);
+    indentMaterial.metalness = THREE.MathUtils.lerp(0.12, 0.04, glass);
+    indentMaterial.clearcoat = THREE.MathUtils.lerp(0.35, 0.7, glass);
+    indentMaterial.clearcoatRoughness = THREE.MathUtils.lerp(0.3, 0.08, glass);
+    indentMaterial.envMapIntensity = THREE.MathUtils.lerp(1.2, 2.4, glass);
+    indentMaterial.needsUpdate = true;
 
     contentMaterial.roughness = THREE.MathUtils.lerp(0.42, 0.06, glass);
     contentMaterial.clearcoat = THREE.MathUtils.lerp(0.6, 1, glass);
@@ -489,10 +651,12 @@ function applyMaterials() {
 }
 
 function apply(key) {
-  if (key === "cardSize") placeDots();
   if (key === "borderRadius" || key === "edgeRadius" || key === "thickness") buildBody();
   if (key === "margin" || key === "titleSize" || key === "titleSpacing") drawAllContent();
-  if (key === "margin") placeDots();
+  if (key === "margin") {
+    placeDots();
+    buildBody();
+  }
   if (key === "bgTransparency" || key === "blur" || key === "glassiness") applyMaterials();
 }
 
@@ -544,7 +708,10 @@ function fit() {
   const aspect = width / height;
   renderer.setSize(width, height, false);
   camera.aspect = aspect;
-  const visibleHeight = Math.max(CARD_HEIGHT / 0.51, CARD_WIDTH / (0.315 * aspect));
+  const compact = 1 - THREE.MathUtils.smoothstep(width, 640, 1100);
+  const widthShare = THREE.MathUtils.lerp(CARD_WIDTH_SHARE, COMPACT_CARD_WIDTH_SHARE, compact);
+  spacingShare = THREE.MathUtils.lerp(CARD_SPACING_SHARE, COMPACT_SPACING_SHARE, compact);
+  const visibleHeight = Math.max(CARD_HEIGHT / 0.51, CARD_WIDTH / (widthShare * aspect));
   const distance = visibleHeight / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)));
   camera.position.set(0, 0, distance);
   camera.lookAt(0, 0, 0);
@@ -743,6 +910,9 @@ let introStart = null;
 const progress = (time, start, duration) => THREE.MathUtils.clamp((time - start) / duration, 0, 1);
 const easeOutQuart = (x) => 1 - Math.pow(1 - x, 4);
 const easeInOutCubic = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+const cardForward = new THREE.Vector3();
+const cardWorld = new THREE.Vector3();
+const toCamera = new THREE.Vector3();
 
 function animate() {
   const elapsed = clock.getElapsedTime();
@@ -768,7 +938,7 @@ function animate() {
         : "ew-resize";
 
   cards.forEach((entry, index) => {
-    const { pivot, card, tilt, spin } = entry;
+    const { pivot, card, indent, tilt, spin } = entry;
     pivot.position.x = index * spacing();
     const offset = (pivot.position.x + track.position.x) / spacing();
     const focus = 1 - Math.min(Math.abs(offset), 1);
@@ -806,6 +976,10 @@ function animate() {
     );
     card.position.y = Math.sin(elapsed * 1.2 + index * 0.8) * 0.025 - (1 - rise) * INTRO.cardDrop;
     card.rotation.x = (1 - rise) * 0.5;
+    card.getWorldDirection(cardForward);
+    card.getWorldPosition(cardWorld);
+    toCamera.subVectors(camera.position, cardWorld);
+    indent.visible = cardForward.dot(toCamera) < 0;
   });
 
   animateDots(elapsed);
