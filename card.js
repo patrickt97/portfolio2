@@ -8,7 +8,10 @@ const CARD_WIDTH = CARD_HEIGHT * CARD_ASPECT;
 const TEXTURE_WIDTH = 1024;
 const TEXTURE_HEIGHT = Math.round(TEXTURE_WIDTH / CARD_ASPECT);
 const STORAGE_KEY = "homev3-card-tweaks";
-const CARD_SPACING = CARD_WIDTH * 1.09;
+const CARD_WIDTH_SHARE = 0.315;
+const COMPACT_CARD_WIDTH_SHARE = 0.58;
+const CARD_SPACING_SHARE = 1.09;
+const COMPACT_SPACING_SHARE = 1.02;
 
 const projects = [
   { title: "BRISTLE", image: "assets/Bristle.png", pattern: "sweep" },
@@ -74,7 +77,8 @@ function saveSettings() {
 const settings = loadSettings();
 
 const cardScale = () => settings.cardSize / 100;
-const spacing = () => CARD_SPACING * cardScale();
+let spacingShare = CARD_SPACING_SHARE;
+const spacing = () => CARD_WIDTH * spacingShare * cardScale();
 
 const view = document.getElementById("card-view");
 const renderer = new THREE.WebGLRenderer({
@@ -238,6 +242,10 @@ const DOT_ROWS = 4;
 const DOT_SIZE_PX = 8;
 const DOT_GAP_PX = 4;
 const DOT_RADIUS_PX = 1;
+// Width of the default card, in CSS pixels, on a height-constrained 1080px-tall view.
+// The grid is a fraction of the card so it scales with card size, focus, and viewport.
+const DOT_REFERENCE_CARD_WIDTH_PX =
+  (CARD_WIDTH * (defaults.cardSize / 100) * 0.51 * 1080) / CARD_HEIGHT;
 const DOT_WAVE_SECONDS = 1.6;
 const DOT_MIN_OPACITY = 0.2;
 const DOT_MAX_OPACITY = 0.6;
@@ -278,7 +286,7 @@ let bodyGeometry = new THREE.BufferGeometry();
 
 function createCard(project, image, index) {
   const pivot = new THREE.Group();
-  pivot.position.x = index * CARD_SPACING;
+  pivot.position.x = index * spacing();
   const card = new THREE.Group();
   pivot.add(card);
 
@@ -404,8 +412,8 @@ function drawAllContent() {
 }
 
 function placeDots() {
-  const size = (DOT_SIZE_PX * worldPerPixel) / cardScale();
-  const gap = (DOT_GAP_PX * worldPerPixel) / cardScale();
+  const size = CARD_WIDTH * (DOT_SIZE_PX / DOT_REFERENCE_CARD_WIDTH_PX);
+  const gap = CARD_WIDTH * (DOT_GAP_PX / DOT_REFERENCE_CARD_WIDTH_PX);
   const margin = (settings.margin / 100) * CARD_WIDTH;
   const gridWidth = DOT_COLUMNS * size + (DOT_COLUMNS - 1) * gap;
   for (const { dots } of cards) {
@@ -489,7 +497,6 @@ function applyMaterials() {
 }
 
 function apply(key) {
-  if (key === "cardSize") placeDots();
   if (key === "borderRadius" || key === "edgeRadius" || key === "thickness") buildBody();
   if (key === "margin" || key === "titleSize" || key === "titleSpacing") drawAllContent();
   if (key === "margin") placeDots();
@@ -544,7 +551,10 @@ function fit() {
   const aspect = width / height;
   renderer.setSize(width, height, false);
   camera.aspect = aspect;
-  const visibleHeight = Math.max(CARD_HEIGHT / 0.51, CARD_WIDTH / (0.315 * aspect));
+  const compact = 1 - THREE.MathUtils.smoothstep(width, 640, 1100);
+  const widthShare = THREE.MathUtils.lerp(CARD_WIDTH_SHARE, COMPACT_CARD_WIDTH_SHARE, compact);
+  spacingShare = THREE.MathUtils.lerp(CARD_SPACING_SHARE, COMPACT_SPACING_SHARE, compact);
+  const visibleHeight = Math.max(CARD_HEIGHT / 0.51, CARD_WIDTH / (widthShare * aspect));
   const distance = visibleHeight / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)));
   camera.position.set(0, 0, distance);
   camera.lookAt(0, 0, 0);
