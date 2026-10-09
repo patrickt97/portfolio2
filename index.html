@@ -126,11 +126,50 @@
         cursor: pointer;
       }
 
+      .panel input[type="color"] {
+        flex: 1 1 auto;
+        min-width: 0;
+        height: 22px;
+        padding: 0;
+        border: 1px solid #3a3a3a;
+        border-radius: 6px;
+        background: transparent;
+        cursor: pointer;
+      }
+
+      .panel input[type="color"]::-webkit-color-swatch-wrapper {
+        padding: 0;
+      }
+
+      .panel input[type="color"]::-webkit-color-swatch {
+        border: none;
+        border-radius: 5px;
+      }
+
       .panel output {
         flex: 0 0 3.2em;
         text-align: right;
         font-variant-numeric: tabular-nums;
         color: #c8c8c8;
+      }
+
+      #light-tweaks {
+        left: auto;
+        right: 20px;
+        max-height: calc(100vh - 88px);
+        overflow: auto;
+      }
+
+      #light-tweaks output {
+        flex-basis: 5.6em;
+      }
+
+      #light-tweaks .panel-heading {
+        margin-top: 8px;
+      }
+
+      #light-tweaks .panel-heading:first-of-type {
+        margin-top: 0;
       }
 
       .panel-header {
@@ -284,28 +323,36 @@
       </button>
       <h2 class="panel-heading">Card</h2>
     </div>
+    <div class="panel" id="light-tweaks" aria-label="Lighting" hidden>
+      <button class="panel-header" id="light-panel-toggle" type="button" aria-expanded="true">
+        <span>Lighting</span>
+        <span class="panel-chevron" aria-hidden="true"></span>
+      </button>
+    </div>
     <script>
       setTimeout(() => document.body.classList.add("intro-play"), 6000);
 
       (() => {
-        const panel = document.getElementById("card-tweaks");
-        const toggle = document.getElementById("panel-toggle");
-        const key = "homev3-panel-collapsed";
-        const setCollapsed = (collapsed) => {
-          panel.classList.toggle("collapsed", collapsed);
-          toggle.setAttribute("aria-expanded", String(!collapsed));
-        };
-        try {
-          setCollapsed(localStorage.getItem(key) === "true");
-        } catch {
-          setCollapsed(false);
-        }
-        toggle.addEventListener("click", () => {
-          const collapsed = !panel.classList.contains("collapsed");
-          setCollapsed(collapsed);
+        document.querySelectorAll(".panel").forEach((panel) => {
+          const toggle = panel.querySelector(".panel-header");
+          if (!toggle) return;
+          const key = panel.id === "card-tweaks" ? "homev3-panel-collapsed" : `${panel.id}-collapsed`;
+          const setCollapsed = (collapsed) => {
+            panel.classList.toggle("collapsed", collapsed);
+            toggle.setAttribute("aria-expanded", String(!collapsed));
+          };
           try {
-            localStorage.setItem(key, String(collapsed));
-          } catch {}
+            setCollapsed(localStorage.getItem(key) === "true");
+          } catch {
+            setCollapsed(false);
+          }
+          toggle.addEventListener("click", () => {
+            const collapsed = !panel.classList.contains("collapsed");
+            setCollapsed(collapsed);
+            try {
+              localStorage.setItem(key, String(collapsed));
+            } catch {}
+          });
         });
       })();
     </script>
