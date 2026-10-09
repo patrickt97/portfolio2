@@ -10,6 +10,7 @@ const CARD_WIDTH = CARD_HEIGHT * CARD_ASPECT;
 const TEXTURE_WIDTH = 1024;
 const TEXTURE_HEIGHT = Math.round(TEXTURE_WIDTH / CARD_ASPECT);
 const STORAGE_KEY = "homev3-card-tweaks";
+const LIGHT_STORAGE_KEY = "homev3-light-tweaks";
 const CARD_WIDTH_SHARE = 0.315;
 const COMPACT_CARD_WIDTH_SHARE = 0.58;
 const CARD_SPACING_SHARE = 1.09;
@@ -52,8 +53,66 @@ const controls = [
   { key: "glassiness", label: "Glassiness", min: 0, max: 1, step: 0.01, format: (v) => v.toFixed(2) },
 ];
 
+const direction = { min: -10, max: 10, step: 0.1, format: (v) => v.toFixed(1) };
+const intensity = { min: 0, max: 8, step: 0.05, format: (v) => v.toFixed(2) };
+
+const lightGroups = [
+  {
+    heading: "Key",
+    controls: [
+      { key: "keyIntensity", label: "Intensity", ...intensity },
+      { key: "keyX", label: "X", ...direction },
+      { key: "keyY", label: "Y", ...direction },
+      { key: "keyZ", label: "Z", ...direction },
+      { key: "keyColor", label: "Color", type: "color", format: (v) => v },
+    ],
+  },
+  {
+    heading: "Rim",
+    controls: [
+      { key: "rimIntensity", label: "Intensity", ...intensity },
+      { key: "rimX", label: "X", ...direction },
+      { key: "rimY", label: "Y", ...direction },
+      { key: "rimZ", label: "Z", ...direction },
+      { key: "rimColor", label: "Color", type: "color", format: (v) => v },
+    ],
+  },
+  {
+    heading: "Stamp",
+    controls: [
+      { key: "stampIntensity", label: "Intensity", ...intensity },
+      { key: "stampX", label: "X", ...direction },
+      { key: "stampY", label: "Y", ...direction },
+      { key: "stampZ", label: "Z", ...direction },
+      { key: "stampColor", label: "Color", type: "color", format: (v) => v },
+    ],
+  },
+];
+
+const lightControls = lightGroups.flatMap((group) => group.controls);
+
+const lightDefaults = {
+  keyIntensity: 5.3,
+  keyX: -3.1,
+  keyY: 0.9,
+  keyZ: 1.8,
+  keyColor: "#fff7e0",
+  rimIntensity: 4.75,
+  rimX: 1,
+  rimY: -0.7,
+  rimZ: -2.7,
+  rimColor: "#0b2b2d",
+  stampIntensity: 2.95,
+  stampX: -1.4,
+  stampY: 5.9,
+  stampZ: -3.2,
+  stampColor: "#ffffff",
+};
+
 const tweaksPanel = document.getElementById("card-tweaks");
 const tweaksEnabled = Boolean(tweaksPanel) && !tweaksPanel.hidden;
+const lightPanel = document.getElementById("light-tweaks");
+const lightTweaksEnabled = Boolean(lightPanel) && !lightPanel.hidden;
 
 function loadSettings() {
   const loaded = { ...defaults };
@@ -76,7 +135,32 @@ function saveSettings() {
   } catch {}
 }
 
+function loadLightSettings() {
+  const loaded = { ...lightDefaults };
+  if (!lightTweaksEnabled) return loaded;
+  try {
+    const saved = JSON.parse(localStorage.getItem(LIGHT_STORAGE_KEY) ?? "{}");
+    for (const control of lightControls) {
+      const value = saved[control.key];
+      if (control.type === "color") {
+        if (typeof value === "string" && /^#[0-9a-fA-F]{6}$/.test(value)) loaded[control.key] = value.toLowerCase();
+      } else {
+        const number = Number(value);
+        if (Number.isFinite(number)) loaded[control.key] = THREE.MathUtils.clamp(number, control.min, control.max);
+      }
+    }
+  } catch {}
+  return loaded;
+}
+
+function saveLightSettings() {
+  try {
+    localStorage.setItem(LIGHT_STORAGE_KEY, JSON.stringify(lightSettings));
+  } catch {}
+}
+
 const settings = loadSettings();
+const lightSettings = loadLightSettings();
 
 const cardScale = () => settings.cardSize / 100;
 let spacingShare = CARD_SPACING_SHARE;
@@ -160,17 +244,27 @@ scene.environmentIntensity = 0.35;
 
 scene.add(new THREE.AmbientLight(0xffffff, 0.45));
 
-const keyLight = new THREE.DirectionalLight(0xffffff, 1.4);
-keyLight.position.set(-2, 3, 4);
-scene.add(keyLight);
+const lights = {
+  key: new THREE.DirectionalLight(),
+  rim: new THREE.DirectionalLight(),
+  stamp: new THREE.DirectionalLight(),
+};
 
-const rimLight = new THREE.DirectionalLight(0x8f7dff, 2.4);
-rimLight.position.set(2.5, -1, -3);
-scene.add(rimLight);
+function applyLight(prefix) {
+  const light = lights[prefix];
+  const x = lightSettings[`${prefix}X`];
+  const y = lightSettings[`${prefix}Y`];
+  const z = lightSettings[`${prefix}Z`];
+  light.color.set(lightSettings[`${prefix}Color`]);
+  light.intensity = lightSettings[`${prefix}Intensity`];
+  if (x === 0 && y === 0 && z === 0) light.position.set(0, 1, 0);
+  else light.position.set(x, y, z);
+}
 
-const stampLight = new THREE.DirectionalLight(0xffffff, 1.6);
-stampLight.position.set(-1.4, 2.4, -3.2);
-scene.add(stampLight);
+for (const prefix of Object.keys(lights)) {
+  applyLight(prefix);
+  scene.add(lights[prefix]);
+}
 
 const track = new THREE.Group();
 scene.add(track);
@@ -660,39 +754,69 @@ function apply(key) {
   if (key === "bgTransparency" || key === "blur" || key === "glassiness") applyMaterials();
 }
 
-function buildPanel() {
-  if (!tweaksEnabled) return;
-  const panel = tweaksPanel;
-  for (const control of controls) {
-    const row = document.createElement("div");
-    row.className = "tweak";
+function appendControl(panel, control, store, onChange) {
+  const row = document.createElement("div");
+  row.className = "tweak";
 
-    const id = `tweak-${control.key}`;
-    const label = document.createElement("label");
-    label.htmlFor = id;
-    label.textContent = control.label;
+  const id = `tweak-${control.key}`;
+  const label = document.createElement("label");
+  label.htmlFor = id;
+  label.textContent = control.label;
 
-    const input = document.createElement("input");
-    input.id = id;
-    input.type = "range";
+  const isColor = control.type === "color";
+  const input = document.createElement("input");
+  input.id = id;
+  input.type = isColor ? "color" : "range";
+  if (!isColor) {
     input.min = control.min;
     input.max = control.max;
     input.step = control.step;
-    input.value = settings[control.key];
+  }
+  input.value = store[control.key];
 
-    const output = document.createElement("output");
-    output.htmlFor = id;
-    output.textContent = control.format(settings[control.key]);
+  const output = document.createElement("output");
+  output.htmlFor = id;
+  output.textContent = control.format(store[control.key]);
 
-    input.addEventListener("input", () => {
-      settings[control.key] = Number(input.value);
-      output.textContent = control.format(settings[control.key]);
-      apply(control.key);
+  input.addEventListener("input", () => {
+    store[control.key] = isColor ? input.value : Number(input.value);
+    output.textContent = control.format(store[control.key]);
+    onChange(control.key);
+  });
+
+  row.append(label, input, output);
+  panel.append(row);
+}
+
+function buildPanel() {
+  if (!tweaksEnabled) return;
+  for (const control of controls) {
+    appendControl(tweaksPanel, control, settings, (key) => {
+      apply(key);
       saveSettings();
     });
+  }
+}
 
-    row.append(label, input, output);
-    panel.append(row);
+function lightPrefix(key) {
+  if (key.startsWith("stamp")) return "stamp";
+  if (key.startsWith("rim")) return "rim";
+  return "key";
+}
+
+function buildLightPanel() {
+  if (!lightTweaksEnabled) return;
+  for (const group of lightGroups) {
+    const heading = document.createElement("h2");
+    heading.className = "panel-heading";
+    heading.textContent = group.heading;
+    lightPanel.append(heading);
+    for (const control of group.controls) {
+      appendControl(lightPanel, control, lightSettings, (key) => {
+        applyLight(lightPrefix(key));
+        saveLightSettings();
+      });
+    }
   }
 }
 
@@ -701,6 +825,7 @@ drawAllContent();
 placeDots();
 applyMaterials();
 buildPanel();
+buildLightPanel();
 
 function fit() {
   const width = window.innerWidth;
